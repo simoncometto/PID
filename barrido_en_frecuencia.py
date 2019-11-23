@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 
 dt = 0.05
 f_sample = 1/dt
-controlador_pid = pid(Kp=1, Ki=0.2, Kd=0.03)
+controlador_pid = pid(Kp=1, Ki=1, Kd=0.1)
 
-f = np.logspace(-1,3, num=500)
-modulo = np.array([])
-
+f = np.logspace(-2,1.6, num=300)
+moduloy = np.array([])
+modulox = np.array([])
 '''
 freq = 0.08
 t = np.arange(0, 2*np.pi/freq, dt)
@@ -32,16 +32,19 @@ for freq in f:
         c = controlador_pid(sample, dt=dt)
         y = np.append(y, c)
 
-    f_i = np.sqrt(np.mean(y**2))
-    modulo = np.append(modulo, f_i)
+    #f_i = np.sqrt(np.mean(y**2))
+    f_i = np.mean(np.abs(y)) * (np.pi / 2)
+    moduloy = np.append(moduloy, f_i)
+    f_i = np.mean(np.abs(x)) * (np.pi / 2)
+    modulox = np.append(modulox, f_i)
 
-modulo = (20*np.log10(modulo/np.sqrt(2)))
-plt.plot(f, modulo)
+bode = (20*np.log10(moduloy/modulox))
+plt.plot(f, bode)
 plt.xscale('log')
-plt.ylim(-25,6)
+#plt.ylim(0,30)
 plt.ylabel('Ganancia [dB]')
 plt.xlabel('Frecuncia [Hz]')
-plt.title('Respuesta en frecuencia PID (Kp=1,Ki=0.2,Kd=0.03) f_sample = 20Hz')
+plt.title('Respuesta en frecuencia PID (Kp=1,Ki=1,Kd=0.1) f_sample = 20Hz')
 plt.axvline(x=20, color='k', ls='--')
-plt.savefig('Freq resp P=1,I=0.2,D=0.03 20Hz.png', dpi=300)
+plt.savefig('Bode P=1,I=1,D=0.1 20Hz (2).png', dpi=300)
 plt.show()
